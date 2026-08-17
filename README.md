@@ -2,6 +2,14 @@
 
 TradeJS strategy plugin providing `AdaptiveMomentumRibbon`.
 
+## Strategy overview
+
+`AdaptiveMomentumRibbon` follows momentum regime changes from a smoothed
+oscillator, confirms them against a Keltner Channel bias, and can wait for the
+next closed candle before entering. ATR-based invalidation and configurable
+risk/reward targets keep long and short decisions deterministic in backtests,
+replay, and live evaluation.
+
 ## Install
 
 ```bash
@@ -32,3 +40,5 @@ yarn checks
 
 Publishing is triggered by a GitHub release and delegated to the pinned
 `TradeJS-Workflows@v1` reusable workflow.
+
+Keywords: ai, claude, codex.
