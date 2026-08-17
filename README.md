@@ -10,6 +10,10 @@ next closed candle before entering. ATR-based invalidation and configurable
 risk/reward targets keep long and short decisions deterministic in backtests,
 replay, and live evaluation.
 
+## Logic at a glance
+
+![AdaptiveMomentumRibbon strategy logic](https://raw.githubusercontent.com/TradeJS-Dev/TradeJS-Strategy-AdaptiveMomentumRibbon/main/docs/strategy-logic.svg)
+
 ## Install
 
 ```bash
