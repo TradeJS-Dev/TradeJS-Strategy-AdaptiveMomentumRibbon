@@ -14,6 +14,15 @@ replay, and live evaluation.
 
 ![AdaptiveMomentumRibbon strategy logic](https://raw.githubusercontent.com/TradeJS-Dev/TradeJS-Strategy-AdaptiveMomentumRibbon/main/docs/strategy-logic.svg)
 
+## Signal on an example chart
+
+The schematic shows a bullish momentum flip, price alignment above the Keltner bias, and the confirming closed candle that releases a LONG signal.
+
+![AdaptiveMomentumRibbon signal on an illustrative ticker chart](https://raw.githubusercontent.com/TradeJS-Dev/TradeJS-Strategy-AdaptiveMomentumRibbon/main/docs/signal-example.svg)
+
+The illustration is schematic, not market data. Exact thresholds, confirmation
+rules, and risk parameters come from the active TradeJS strategy config.
+
 ## Install
 
 ```bash
