@@ -1,6 +1,6 @@
 {
   "name": "@tradejs/strategy-adaptive-momentum-ribbon",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Momentum regime strategy using a smoothed oscillator, Keltner bias, and ATR risk controls for TradeJS.",
   "type": "module",
   "packageManager": "yarn@4.13.0",
