@@ -1,4 +1,4 @@
-import { createStrategyConfigParser } from "@tradejs/strategy-kit/config";
+import { createCostIsolatedStrategyConfigParser } from "@tradejs/strategy-kit/config";
 import type { ValidatedStrategyRegistryEntry } from "@tradejs/strategy-kit/config";
 import {
   AdaptiveMomentumRibbonConfig,
@@ -10,7 +10,7 @@ import { adaptiveMomentumRibbonManifest } from "./manifest";
 export const AdaptiveMomentumRibbonStrategyDefinition: ValidatedStrategyRegistryEntry<AdaptiveMomentumRibbonConfig> =
   {
     defaults: DEFAULT_CONFIG,
-    parseConfig: createStrategyConfigParser({
+    parseConfig: createCostIsolatedStrategyConfigParser({
       strategyName: "AdaptiveMomentumRibbon",
       defaults: DEFAULT_CONFIG,
     }),
