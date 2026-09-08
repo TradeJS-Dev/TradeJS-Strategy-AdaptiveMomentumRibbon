@@ -198,7 +198,7 @@ export const createAdaptiveMomentumRibbonCore: CreateStrategyCore<
     AMR_EXIT_ON_OPPOSITE_SIGNAL,
     AMR_EXIT_ON_INVALIDATION,
     MAX_LOSS_VALUE,
-    FEE_PERCENT,
+    RISK_FEE_RATE,
   } = config;
   const linePlots = resolveLinePlots(config.AMR_LINE_PLOTS);
   const lookbackBars = asPositiveInt(config.AMR_LOOKBACK_BARS, 0);
@@ -370,10 +370,10 @@ export const createAdaptiveMomentumRibbonCore: CreateStrategyCore<
         stopLossPrice,
         targetR: Number(config.AMR_TARGET_R_MULT ?? 2),
         maxLossValue: MAX_LOSS_VALUE,
-        feeRate: Number(FEE_PERCENT ?? 0),
+        feeRate: Number(RISK_FEE_RATE ?? 0),
         slippageBps:
-          Number(config.SLIPPAGE_BASE_BPS ?? 0) +
-          Number(config.SLIPPAGE_MARKET_IMPACT_BPS ?? 0),
+          Number(config.RISK_SLIPPAGE_BPS ?? 0) +
+          Number(config.RISK_MARKET_IMPACT_BPS ?? 0),
       });
 
     if (!qty || !Number.isFinite(qty) || qty <= 0) {
