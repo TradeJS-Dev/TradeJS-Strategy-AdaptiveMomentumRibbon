@@ -364,6 +364,7 @@ describe("createAdaptiveMomentumRibbonCore", () => {
           lookbackBars: 200,
         }),
         amrConfigSnapshot: expect.objectContaining({
+          confirmationWindowBars: 0,
           momentumPeriod: 32,
           butterworthSmoothing: 4,
           minSignalOscAbs: 0.55,
@@ -388,6 +389,34 @@ describe("createAdaptiveMomentumRibbonCore", () => {
       }),
     );
     expect(decision.signal?.figures?.lines?.length ?? 0).toBeGreaterThan(0);
+  });
+
+  it("isolates detector state and records the effective confirmation window", async () => {
+    mockedEvaluateAdaptiveMomentumRibbon.mockReturnValue(
+      makeEvaluation({ entryLong: true, activeBuy: true }),
+    );
+    const { strategyApi, candles } = await makeRuntime();
+    const core = await createAdaptiveMomentumRibbonCore({
+      config: {
+        ...DEFAULT_CONFIG,
+        AMR_CONFIRMATION_WINDOW_BARS: 4,
+      } as any,
+      data: candles.slice(0, -1),
+      strategyApi,
+      indicatorsState: makeIndicatorsState(),
+    });
+    expect(mockedCreateAdaptiveMomentumRibbonEngine).toHaveBeenCalledTimes(2);
+    const decision = await core(candles.at(-1)!, candles.at(-1)!);
+    expect(decision.kind).toBe("entry");
+    if (decision.kind === "entry") {
+      expect(decision.signal?.additionalIndicators).toEqual(
+        expect.objectContaining({
+          amrConfigSnapshot: expect.objectContaining({
+            confirmationWindowBars: 4,
+          }),
+        }),
+      );
+    }
   });
 
   it("returns exit decision when opposite AMR signal appears on open position", async () => {

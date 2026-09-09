@@ -15,7 +15,7 @@ import {
   getSignalSessionPrimary,
 } from "@tradejs/strategy-kit/context";
 import {
-  getAiPayloadNumber,
+  getAiPayloadValue,
   withStrategyLocalAiGate,
 } from "@tradejs/strategy-kit/ai-gate";
 
@@ -1515,23 +1515,39 @@ Interpretation rules for AdaptiveMomentumRibbon:
 export const adaptiveMomentumRibbonAiAdapter = withStrategyLocalAiGate(
   adaptiveMomentumRibbonBaseAiAdapter,
   {
-    id: "adaptive_momentum_ribbon_long_breadth_poc",
+    id: "adaptive_momentum_ribbon_structure_beta",
     approves: ({ signal, payload }) => {
-      const unchanged = getAiPayloadNumber(
+      const resistanceVolumeShare = getAiPayloadValue(
         payload,
-        "additionalIndicators.baseContext.relative.marketBreadths.top100.unchanged",
+        "additionalIndicators.baseContext.structure.zones.resistance.volumeShare",
       );
-      const pointOfControlVolumeShare = getAiPayloadNumber(
+      const activeTails = getAiPayloadValue(
         payload,
-        "additionalIndicators.baseContext.participation.volumeStructure.pointOfControlVolumeShare",
+        "additionalIndicators.baseContext.structure.liquidityTails.activeCount",
+      );
+      const betaToBtc20 = getAiPayloadValue(
+        payload,
+        "additionalIndicators.baseContext.relative.targetVsBtc.betaToBtc20",
+      );
+      const mtfAlignment = getAiPayloadValue(
+        payload,
+        "additionalIndicators.baseContext.mtf.summary.mtfAlignment",
       );
 
       return (
-        signal.direction === "LONG" &&
-        unchanged != null &&
-        unchanged >= 10 &&
-        pointOfControlVolumeShare != null &&
-        pointOfControlVolumeShare <= 0.166
+        (signal.direction === "LONG" &&
+          typeof resistanceVolumeShare === "number" &&
+          Number.isFinite(resistanceVolumeShare) &&
+          resistanceVolumeShare >= 0.075 &&
+          typeof activeTails === "number" &&
+          Number.isFinite(activeTails) &&
+          activeTails <= 4) ||
+        (signal.direction === "SHORT" &&
+          typeof betaToBtc20 === "number" &&
+          Number.isFinite(betaToBtc20) &&
+          betaToBtc20 >= 2 &&
+          typeof mtfAlignment === "string" &&
+          mtfAlignment.trim() === "aligned_bear")
       );
     },
   },

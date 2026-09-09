@@ -394,6 +394,10 @@ export const createAdaptiveMomentumRibbonEngine = ({
   const smoothingLength = asPositiveInt(config.AMR_BUTTERWORTH_SMOOTHING, 3);
   const waitClose = Boolean(config.AMR_WAIT_CLOSE);
   const confirmOnNextBar = Boolean(config.AMR_CONFIRM_ON_NEXT_BAR);
+  const confirmationWindowBars = asPositiveInt(
+    config.AMR_CONFIRMATION_WINDOW_BARS,
+    0,
+  );
   const minSignalOscAbsLong = asPositiveNumber(
     resolveDirectionalConfigNumber({
       config,
@@ -443,6 +447,9 @@ export const createAdaptiveMomentumRibbonEngine = ({
   let previousSignalOsc: number | null = null;
   let lastAcceptedSignalIndex: number | null = null;
   let pendingSignal: PendingAdaptiveMomentumRibbonSignal | null = null;
+  let pendingCross:
+    (PendingAdaptiveMomentumRibbonSignal & { crossingIndex: number }) | null =
+    null;
   let invalidationLevel: number | null = null;
   let activeBuy = false;
   let activeSell = false;
@@ -538,7 +545,45 @@ export const createAdaptiveMomentumRibbonEngine = ({
       const shortKcBiasOk =
         !requireKcBias || (kcMidline != null && candle.close < kcMidline);
 
-      if (confirmOnNextBar) {
+      if (confirmationWindowBars > 0) {
+        // A crossing starts one causal candidate; later amplitude must still
+        // pass the original directional strength, KC and spacing predicates.
+        if ((rawEntryLong || rawEntryShort) && sourceCandle) {
+          pendingCross = {
+            direction: rawEntryLong ? "LONG" : "SHORT",
+            invalidationLevel: rawEntryLong
+              ? sourceCandle.low
+              : sourceCandle.high,
+            crossingIndex: index,
+          };
+        }
+
+        if (pendingCross) {
+          const age = index - pendingCross.crossingIndex;
+          const isLong = pendingCross.direction === "LONG";
+          const sameSign = isLong ? signalOsc > 0 : signalOsc < 0;
+          const level = pendingCross.invalidationLevel;
+          const levelUnbroken =
+            level == null ||
+            (isLong ? candle.low >= level : candle.high <= level);
+
+          if (!sameSign || !levelUnbroken || age > confirmationWindowBars) {
+            pendingCross = null;
+          } else if (
+            (!confirmOnNextBar || age > 0) &&
+            spacingOk &&
+            (isLong
+              ? longStrongEnough && longKcBiasOk
+              : shortStrongEnough && shortKcBiasOk)
+          ) {
+            entryLong = isLong;
+            entryShort = !isLong;
+            invalidationLevel = level;
+            lastAcceptedSignalIndex = index;
+            pendingCross = null;
+          }
+        }
+      } else if (confirmOnNextBar) {
         if (pendingSignal?.direction === "LONG") {
           const pendingStillValid =
             pendingSignal.invalidationLevel == null ||

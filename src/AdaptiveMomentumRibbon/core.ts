@@ -175,6 +175,10 @@ const buildAdaptiveMomentumRibbonStateKey = ({
     butterworthSmoothing: config.AMR_BUTTERWORTH_SMOOTHING,
     waitClose: config.AMR_WAIT_CLOSE,
     confirmOnNextBar: config.AMR_CONFIRM_ON_NEXT_BAR,
+    confirmationWindowBars: asPositiveInt(
+      config.AMR_CONFIRMATION_WINDOW_BARS,
+      0,
+    ),
     minSignalOscAbs: config.AMR_MIN_SIGNAL_OSC_ABS,
     minSignalOscAbsLong: config.AMR_MIN_SIGNAL_OSC_ABS_LONG,
     minSignalOscAbsShort: config.AMR_MIN_SIGNAL_OSC_ABS_SHORT,
@@ -479,6 +483,10 @@ export const createAdaptiveMomentumRibbonCore: CreateStrategyCore<
           lookbackBars,
         },
         amrConfigSnapshot: {
+          confirmationWindowBars: asPositiveInt(
+            config.AMR_CONFIRMATION_WINDOW_BARS,
+            0,
+          ),
           momentumPeriod: asPositiveInt(config.AMR_MOMENTUM_PERIOD, 20),
           butterworthSmoothing: asPositiveInt(
             config.AMR_BUTTERWORTH_SMOOTHING,
